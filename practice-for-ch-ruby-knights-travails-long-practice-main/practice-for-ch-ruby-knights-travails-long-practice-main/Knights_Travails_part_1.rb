@@ -75,23 +75,28 @@ end
 
 class KnightPathFinder
     def initialize(starting_position)
-        @considered_positions = starting_position
+        @considered_positions = [starting_position]
         @current_position = starting_position
         @grid = Array.new(8) {Array.new(8)}
         @starting_position = starting_position 
+        build_move_tree
     end
 
     def build_move_tree
         nodes = []
+        @root_node = PolyTreeNode.new(@current_position)
+        nodes << @root_node 
 
-        nodes << PolyTreeNode.new(@current_position)
         while !nodes.empty?
             curr_node = nodes.shift
             current_pos = curr_node.value
                 new_move_positions(current_pos).each do |new_position|
+                if !@considered_positions.include?(new_position)
                     new_node = PolyTreeNode.new(new_position)
                     curr_node.add_child(new_node)
                     nodes << new_node
+                    @considered_positions << new_position
+                end 
                 end
                     
         end
@@ -99,50 +104,51 @@ class KnightPathFinder
     end
 
     def find_path(end_pos)
-        return PolyTreeNode.bfs(end_pos)
+        end_node = @root_node.bfs(end_pos)
+        trace_path_back(end_node)
     end 
 
-    def trace_path_back(end_pos)
-        end_node = find_path(end_pos) 
-        array = []
-        while !parent.nil?
-        array << end_node 
-        end_pos = parent=(end_node)
-        end_node = find_path(end_pos) 
+    def trace_path_back(end_node)
+        current_node = end_node 
+        path = []
+
+        while current_node
+        path << current_node.value 
+        current_node = current_node.parent
         end 
-    return array 
+    path.reverse 
     end 
 
 
 
     def self.valid_moves(pos)
-        x_coordinate = pos[0]
-        y_coordinate = pos[1]
-        holder_array = []
-        potential_moves = []
+        # x_coordinate = pos[0]
+        # y_coordinate = pos[1]
+        # holder_array = []
+        # potential_moves = []
 
-        (x_coordinate-1..x_coordinate+1).each do |x_coordinates|
-            (y_coordinate-1..y_coordinate+1).each do |y_coordinates|
-                if [x_coordinates, y_coordinates] != @current_position
-                    holder_array << [x_coordinates, y_coordinates]
-                end
-            end
-        end
-
-        holder_array.each do |coordinate_pairs|
-            if coordinate_pairs[0] >= 0 && coordinate_pairs[1] >= 0
-                potential_moves << coordinate_pairs
-            end
-        end
-
-        # potential_moves.each do |moves|
-        #     if !@considered_positions.include?(moves)
-        #         @considered_positions << moves
+        # (x_coordinate-1..x_coordinate+1).each do |x_coordinates|
+        #     (y_coordinate-1..y_coordinate+1).each do |y_coordinates|
+        #         if [x_coordinates, y_coordinates] != @current_position
+        #             holder_array << [x_coordinates, y_coordinates]
+        #         end
         #     end
         # end
 
-        return potential_moves
+        # holder_array.each do |coordinate_pairs|
+        #     if coordinate_pairs[0] >= 0 && coordinate_pairs[1] >= 0
+        #         potential_moves << coordinate_pairs
+        #     end
 
+            x, y = pos
+            potential_moves = [
+                [x - 2, y - 1], [x - 2, y + 1], [x - 1, y - 2], [x - 1, y + 2],
+                [x + 1, y - 2], [x + 1, y + 2], [x + 2, y - 1], [x + 2, y + 1]
+            ]
+        
+            potential_moves.select do |move|
+                move.all? { |coord| coord.between?(0, 7) }
+            end
     end
 
     def new_move_positions(pos)
