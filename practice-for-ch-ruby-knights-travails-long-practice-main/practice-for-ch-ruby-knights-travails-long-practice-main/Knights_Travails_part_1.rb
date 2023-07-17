@@ -78,11 +78,18 @@ class KnightPathFinder
     self.root_node = starting_position 
     @considered_positions = starting_position 
     @current_position = starting position 
+    @grid = Array.new(8) {Array.new(8)}
     end 
 
-    # def build_move_tree 
-    
-    # end
+    def build_move_tree 
+    potential_positions = new_move_positions 
+
+    queue = [] 
+
+
+
+
+    end
 
     def self.valid_moves 
         x_coordinate = @current_position[0]
@@ -104,11 +111,13 @@ class KnightPathFinder
             end 
         end 
 
-        potential_moves.each do |moves|
-            if !@considered_positions.include?(moves)
-                @considered_positions << moves 
-            end 
-        end 
+        # potential_moves.each do |moves|
+        #     if !@considered_positions.include?(moves)
+        #         @considered_positions << moves 
+        #     end 
+        # end 
+
+        return potential_moves
 
     end 
 
@@ -117,7 +126,8 @@ class KnightPathFinder
 
     self.valid_moves.each do |move|
         if !considered_positions.include?(move)
-            potential_positions << potential_positions 
+            potential_positions << move
+            @considered_positions << move  
         end 
     end 
 
