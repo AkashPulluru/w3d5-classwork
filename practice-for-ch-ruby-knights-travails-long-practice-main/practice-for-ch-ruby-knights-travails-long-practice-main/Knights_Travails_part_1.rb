@@ -84,9 +84,16 @@ class KnightPathFinder
     def build_move_tree 
     potential_positions = new_move_positions 
 
-    queue = [] 
+    while !new_move_positions.nil?
+        nodes << PolyTreeNode.new(@current_position)
+        new_move_positions.each do |node|
+            nodes << PolyTreeNode.new(node) 
+        end 
+        build_move_tree
+    end 
 
 
+    end 
 
 
     end
