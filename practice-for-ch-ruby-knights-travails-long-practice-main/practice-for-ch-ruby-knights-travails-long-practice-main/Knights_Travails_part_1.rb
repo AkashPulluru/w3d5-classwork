@@ -75,10 +75,10 @@ end
 
 class KnightPathFinder
     def initialize(starting_position)
-        self.root_node = starting_position
         @considered_positions = starting_position
         @current_position = starting_position
         @grid = Array.new(8) {Array.new(8)}
+        @starting_position = starting_position 
     end
 
     def build_move_tree
@@ -86,31 +86,38 @@ class KnightPathFinder
 
         nodes << PolyTreeNode.new(@current_position)
         while !nodes.empty?
-            curr_node = node.shift
-            # if curr_node.root_node == target_pos
-            #     return curr_node
-            # else
+            curr_node = nodes.shift
             current_pos = curr_node.value
-                new_move_position(current_pos).each do |node|
-                    new_node = PolyTreeNode.new(node)
-                    nodes << new_node
+                new_move_positions(current_pos).each do |new_position|
+                    new_node = PolyTreeNode.new(new_position)
                     curr_node.add_child(new_node)
-
-
+                    nodes << new_node
                 end
-            end
-
+                    
         end
-        nil
 
     end
 
+    def find_path(end_pos)
+        return PolyTreeNode.bfs(end_pos)
+    end 
 
-    end
+    def trace_path_back(end_pos)
+        end_node = find_path(end_pos) 
+        array = []
+        while !parent.nil?
+        array << end_node 
+        end_pos = parent=(end_node)
+        end_node = find_path(end_pos) 
+        end 
+    return array 
+    end 
 
-    def self.valid_moves
-        x_coordinate = @current_position[0]
-        y_coordinate = @current_position[1]
+
+
+    def self.valid_moves(pos)
+        x_coordinate = pos[0]
+        y_coordinate = pos[1]
         holder_array = []
         potential_moves = []
 
@@ -123,7 +130,7 @@ class KnightPathFinder
         end
 
         holder_array.each do |coordinate_pairs|
-            if coordinate_pairs[0] >= 0 & coordinate_pairs[1] >= 0
+            if coordinate_pairs[0] >= 0 && coordinate_pairs[1] >= 0
                 potential_moves << coordinate_pairs
             end
         end
@@ -141,8 +148,8 @@ class KnightPathFinder
     def new_move_positions(pos)
     potential_positions = []
 
-    pos.valid_moves.each do |move|
-        if !considered_positions.include?(move)
+    KnightPathFinder.valid_moves(pos).each do |move|
+        if !@considered_positions.include?(move)
             potential_positions << move
             @considered_positions << move
         end
