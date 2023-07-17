@@ -87,16 +87,14 @@ class KnightPathFinder
         @root_node = PolyTreeNode.new(@current_position)
         nodes << @root_node 
 
-        while !nodes.empty?
+        until nodes.empty?
             curr_node = nodes.shift
             current_pos = curr_node.value
                 new_move_positions(current_pos).each do |new_position|
-                if !@considered_positions.include?(new_position)
                     new_node = PolyTreeNode.new(new_position)
                     curr_node.add_child(new_node)
                     nodes << new_node
                     @considered_positions << new_position
-                end 
                 end
                     
         end
@@ -116,29 +114,12 @@ class KnightPathFinder
         path << current_node.value 
         current_node = current_node.parent
         end 
-    path.reverse 
+    return path
     end 
 
 
 
     def self.valid_moves(pos)
-        # x_coordinate = pos[0]
-        # y_coordinate = pos[1]
-        # holder_array = []
-        # potential_moves = []
-
-        # (x_coordinate-1..x_coordinate+1).each do |x_coordinates|
-        #     (y_coordinate-1..y_coordinate+1).each do |y_coordinates|
-        #         if [x_coordinates, y_coordinates] != @current_position
-        #             holder_array << [x_coordinates, y_coordinates]
-        #         end
-        #     end
-        # end
-
-        # holder_array.each do |coordinate_pairs|
-        #     if coordinate_pairs[0] >= 0 && coordinate_pairs[1] >= 0
-        #         potential_moves << coordinate_pairs
-        #     end
 
             x, y = pos
             potential_moves = [
@@ -151,18 +132,26 @@ class KnightPathFinder
             end
     end
 
+    # def new_move_positions(pos)
+    # potential_positions = []
+
+    # KnightPathFinder.valid_moves(pos).each do |move|
+        
+    #     if !@considered_positions.include?(move)
+    #         @considered_positions << move
+    #     else 
+    #         potential_positions << move
+    #     end
+    # end
+
+    # return potential_positions
+
+    # end
+
     def new_move_positions(pos)
-    potential_positions = []
-
-    KnightPathFinder.valid_moves(pos).each do |move|
-        if !@considered_positions.include?(move)
-            potential_positions << move
-            @considered_positions << move
-        end
-    end
-
-    return potential_positions
-
-    end
+        KnightPathFinder.valid_moves(pos)
+          .reject { |new_pos| @considered_positions.include?(new_pos) }
+          .each { |new_pos| @considered_positions << new_pos }
+      end
 
 end
