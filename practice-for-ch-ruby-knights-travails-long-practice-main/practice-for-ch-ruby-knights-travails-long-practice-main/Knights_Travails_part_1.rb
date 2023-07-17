@@ -81,18 +81,22 @@ class KnightPathFinder
         @grid = Array.new(8) {Array.new(8)}
     end
 
-    def build_move_tree(target_pos)
-        potential_positions = new_move_positions(@current_position)
+    def build_move_tree
         nodes = []
 
         nodes << PolyTreeNode.new(@current_position)
         while !nodes.empty?
             curr_node = node.shift
-            if curr_node.root_node == target_pos
-                return curr_node
-            else
-                current_position.potential_positions.each do |node|
-                    nodes << PolyTreeNode.new(node)
+            # if curr_node.root_node == target_pos
+            #     return curr_node
+            # else
+            current_pos = curr_node.value
+                new_move_position(current_pos).each do |node|
+                    new_node = PolyTreeNode.new(node)
+                    nodes << new_node
+                    curr_node.add_child(new_node)
+
+
                 end
             end
 
